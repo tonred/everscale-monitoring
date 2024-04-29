@@ -36,13 +36,14 @@ tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 is-terminal = "0.4"
 
-nekoton-abi = { git = "https://github.com/broxus/nekoton.git", features = ["derive"] }
+nekoton-abi = { git = "https://github.com/tonred/nekoton.git", features = ["derive"] }
 
-ton-indexer = { git = "https://github.com/broxus/ton-indexer.git", features = ["archive-uploader"] }
+ton-indexer = { git = "https://github.com/tonred/ton-indexer.git", features = ["archive-uploader"] }
 
-ton_block = { git = "https://github.com/broxus/ton-labs-block.git" }
+ton_block = { git = "https://github.com/tonred/ton-labs-block.git" }
 ton_types = { git = "https://github.com/broxus/ton-labs-types.git" }
-ton_abi = { git = "https://github.com/broxus/ton-labs-abi.git" }
+ton_abi = { git = "https://github.com/tonred/ton-labs-abi.git" }
 
 [features]
 venom = ["ton_block/venom", "ton-indexer/venom"]
+ton = ["ton_block/ton", "ton-indexer/ton"]

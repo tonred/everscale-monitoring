@@ -501,55 +501,6 @@ impl std::fmt::Display for MetricsState {
 
             f.begin_metric("frmon_mc_shard_time_diff")
                 .value(metrics.shard_client_time_diff.load(Ordering::Acquire))?;
-
-            f.begin_metric("ton_indexer_block_broadcasts_total")
-                .value(metrics.block_broadcasts.total.load(Ordering::Acquire))?;
-            f.begin_metric("ton_indexer_block_broadcasts_invalid")
-                .value(metrics.block_broadcasts.invalid.load(Ordering::Acquire))?;
-
-            macro_rules! downloader_metrics {
-                ($f:ident, $metrics:ident.$name:ident) => {
-                    $f.begin_metric(concat!("ton_indexer_", stringify!($name), "_total"))
-                        .value($metrics.$name.total.load(Ordering::Acquire))?;
-                    $f.begin_metric(concat!("ton_indexer_", stringify!($name), "_errors"))
-                        .value($metrics.$name.errors.load(Ordering::Acquire))?;
-                    $f.begin_metric(concat!("ton_indexer_", stringify!($name), "_timeouts"))
-                        .value($metrics.$name.timeouts.load(Ordering::Acquire))?;
-                };
-            }
-
-            downloader_metrics!(f, metrics.download_next_block_requests);
-            downloader_metrics!(f, metrics.download_block_requests);
-            downloader_metrics!(f, metrics.download_block_proof_requests);
-
-            let db_metrics = engine.get_db_metrics();
-            f.begin_metric("ton_indexer_db_max_new_mc_cell_count")
-                .value(db_metrics.shard_state_storage.max_new_mc_cell_count)?;
-            f.begin_metric("ton_indexer_db_max_new_sc_cell_count")
-                .value(db_metrics.shard_state_storage.max_new_sc_cell_count)?;
-
-            f.begin_metric("ton_indexer_db_states_gc_running")
-                .value(db_metrics.shard_state_storage.gc_status.is_some() as u8)?;
-
-            if let Some(gc_status) = &db_metrics.shard_state_storage.gc_status {
-                let workchain = gc_status.current_shard.workchain_id();
-                let shard = make_short_shard_name(gc_status.current_shard.shard_prefix_with_tag());
-
-                f.begin_metric("ton_indexer_db_states_gc_start_seqno")
-                    .label(WORKCHAIN, workchain)
-                    .label(SHARD, &shard)
-                    .value(gc_status.start_seqno)?;
-
-                f.begin_metric("ton_indexer_db_states_gc_end_seqno")
-                    .label(WORKCHAIN, workchain)
-                    .label(SHARD, &shard)
-                    .value(gc_status.end_seqno)?;
-
-                f.begin_metric("ton_indexer_db_states_gc_current_seqno")
-                    .label(WORKCHAIN, workchain)
-                    .label(SHARD, &shard)
-                    .value(gc_status.current_seqno.load(Ordering::Acquire))?;
-            }
         }
 
         if let Some(persistent_state) = &*self.persistent_state.lock() {
